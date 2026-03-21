@@ -56,9 +56,11 @@ When the user wants to generate videos, choose the appropriate tool based on the
 **Use when:**
 - Generation is pending and user wants to check status
 - User asks "is my video done?"
+- A generation tool returned only a task_id and you need the final video URLs
 
 ## Important Notes:
-1. Video generation takes 1-2 minutes - always return the task_id
+1. Video generation takes 1-2 minutes and MCP tools should return quickly with a task_id
+2. After any generation submission, poll with `sora_get_task` until the final video URLs are available
 2. Default model is sora-2 (good balance of quality and cost)
 3. Use sora-2-pro for 25-second videos or highest quality
 4. Character videos CANNOT use real people - only animated characters
@@ -74,8 +76,8 @@ def sora_workflow_examples() -> str:
 ## Workflow 1: Simple Video Generation
 1. User: "Create a video of a sunset over mountains"
 2. Call `sora_generate_video(prompt="A beautiful sunset over snow-capped mountains, golden hour lighting, cinematic")`
-3. Return task_id to user
-4. User can check status with `sora_get_task(task_id)`
+3. Return the task_id from the submission response
+4. Poll with `sora_get_task(task_id)` until the completed video URLs are available
 
 ## Workflow 2: Image-to-Video
 1. User provides an image URL
@@ -93,7 +95,7 @@ def sora_workflow_examples() -> str:
 1. User needs a high quality 25-second video
 2. Must use sora-2-pro model
 3. Call `sora_generate_video(prompt="...", model="sora-2-pro", duration=25)`
-4. Return task_id
+4. Poll with `sora_get_task(task_id)` for the finished video
 
 ## Workflow 5: Async Production Workflow
 1. User has a webhook endpoint
